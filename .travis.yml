@@ -94,7 +94,7 @@ script:
   - for file in `find patches/ -maxdepth 1 -type f` ; do patch -p1 < $file ; done
   - for file in `find patches/$TRAVIS_OS_NAME/ -maxdepth 1 -type f` ; do patch -p1 < $file ; done
   - travis_fold start "build.sh"
-  - ./build.sh -d /opt/rump -q -k linux notest
+  - if [ $OS = "solo5" ] ; then ./build.sh -d /opt/rump -q -k linux $OS $SOLO5TARGET notest ; else ./build.sh -d /opt/rump -q -k linux notest ; fi
   - travis_fold end "build.sh"
   - RUMPDIR=/opt/rump RUMPOBJ=`pwd`/rumpobj make -C tests run
   - if [ $TRAVIS_REPO_SLUG == "ukontainer/frankenlibc" ] ; then bash -e ./.travis-deploy.sh $DEPLOY ; fi
