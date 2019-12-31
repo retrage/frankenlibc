@@ -65,6 +65,12 @@ case ${TARGET} in
 	OS=unknown
 esac
 
+if [ -n "${SOLO5}" ] ; then
+  OS=solo5
+  EXTRA_LDFLAGS="${EXTRA_LDFLAGS} -z max-page-size=0x1000"
+  ( cd solo5 && ./configure.sh && ${MAKE} )
+fi
+
 HOST=$(uname -s)
 
 case ${HOST} in
@@ -539,7 +545,7 @@ mkdir -p ${RUMPOBJ}/explode/platform
 
 	cd ${RUMPOBJ}/explode
 	${AR-ar} cr libc.a rumpkernel/rumpkernel.o rumpuser/*.o ${LIBC_DIR}/*.o franken/*.o platform/*.o
-	if [ "${HOST}" = "Linux" ] && [ "${OS}" != "qemu-arm" ]; then
+	if [ "${HOST}" = "Linux" ] && [ "${OS}" != "qemu-arm" ] && [ "${OS}" != "solo5" ] ; then
 		LDFLAGS_LIBCSO="-Wl,-e,_dlstart -nostdlib -shared"
 
 		# XXX: aarch64-gcc has an issue w/ gold
@@ -571,7 +577,7 @@ rumpkernel_install_extra_libs
 ${INSTALL-install} ${RUMP}/lib/*.o ${OUTDIR}/lib
 [ -f ${RUMP}/lib/libg.a ] && ${INSTALL-install} ${RUMP}/lib/libg.a ${OUTDIR}/lib
 ${INSTALL-install} ${RUMPOBJ}/explode/libc.a ${OUTDIR}/lib
-if [ "${HOST}" = "Linux" ] && [ "${OS}" != "qemu-arm" ]; then
+if [ "${HOST}" = "Linux" ] && [ "${OS}" != "qemu-arm" ] && [ "${OS}" != "solo5" ] ; then
 	${INSTALL-install} ${RUMPOBJ}/explode/libc.so ${OUTDIR}/lib
 	LDSO_PATHNAME="${OUTDIR}/lib/ld-frankenlibc-x86_64-linux.so.1"
 	WD=`pwd`; cd ${OUTDIR}/lib/; ln -sf libc.so ${LDSO_PATHNAME}; cd ${WD}
@@ -628,6 +634,7 @@ else
 	appendvar STARTFILE "${OUTDIR}/lib/crti.o"
 	[ -f ${OUTDIR}/lib/crtbegin.o ] && appendvar STARTFILE "${OUTDIR}/lib/crtbegin.o"
 	[ -f ${OUTDIR}/lib/crtbeginT.o ] && appendvar STARTFILE "${OUTDIR}/lib/crtbeginT.o"
+	[ -f ${OUTDIR}/lib/manifest.o ] && appendvar STARTFILE "${OUTDIR}/lib/manifest.o"
 	ENDFILE="${OUTDIR}/lib/crtend.o ${OUTDIR}/lib/crtn.o"
 	cat tools/spec.in | sed \
 		-e "s#@SYSROOT@#${OUTDIR}#g" \
