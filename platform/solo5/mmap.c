@@ -5,14 +5,8 @@
 
 #include "solo5.h"
 
-/* TODO: use heap passed from solo5 */
-
-#define CORESIZE 16777216*8
-
-static char __core[CORESIZE];
-
-static uintptr_t core_base = (uintptr_t) &__core;
-static uintptr_t core_top = (uintptr_t) &__core[CORESIZE];
+uintptr_t solo5_heap_start;
+uintptr_t solo5_heap_end;
 
 void *
 mmap(void *addr, size_t length, int prot, int nflags, int fd, off_t offset)
@@ -36,17 +30,17 @@ mmap(void *addr, size_t length, int prot, int nflags, int fd, off_t offset)
   }
   amask = align - 1UL;
 
-  if ((core_base & amask) != 0)
-    core_base = (core_base & ~amask) + align;
+  if ((solo5_heap_start & amask) != 0)
+    solo5_heap_start = (solo5_heap_start & ~amask) + align;
 
-  if (core_base + length > core_top) {
+  if (solo5_heap_start + length > solo5_heap_end) {
     errno = ENOMEM;
     return MAP_FAILED;
   }
 
-  mem = (void *)core_base;
+  mem = (void *)solo5_heap_start;
 
-  core_base += length;
+  solo5_heap_start += length;
 
   return mem;
 }
