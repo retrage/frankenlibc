@@ -1,0 +1,25 @@
+commit 9865a77c9482c61f407ab3bd918b5680d624af75
+Author: Akira Moroo <retrage01@gmail.com>
+Date:   Wed Jan 1 01:40:53 2020 +0900
+
+    Add workaround for rumprun
+    
+    Signed-off-by: Akira Moroo <retrage01@gmail.com>
+
+diff --git a/solo5/tenders/common/elf.c b/solo5/tenders/common/elf.c
+index 0a93e19..d3ce1eb 100644
+--- a/solo5/tenders/common/elf.c
++++ b/solo5/tenders/common/elf.c
+@@ -329,8 +329,10 @@ void elf_load(int bin_fd, const char *bin_name, uint8_t *mem, size_t mem_size,
+          */
+         if (p_vaddr_start & (EM_PAGE_SIZE - 1))
+             goto out_invalid;
+-        if (p_vaddr_end & (EM_PAGE_SIZE - 1))
+-            goto out_invalid;
++        if (p_vaddr_end & (EM_PAGE_SIZE - 1)) {
++            if (align_up(p_vaddr_end, EM_PAGE_SIZE, &p_vaddr_end))
++                goto out_invalid;
++        }
+         int prot = PROT_NONE;
+         if (phdr[ph_i].p_flags & PF_R)
+             prot |= PROT_READ;
