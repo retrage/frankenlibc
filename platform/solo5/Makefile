@@ -36,7 +36,7 @@ OBJ+=$(OBJDIR)/write.o
 OBJ+=$(OBJDIR)/writev.o
 OBJ+=$(OBJDIR)/solo5_spt.o
 HEADERS=solo5.h $(SOLO5DIR)/include/solo5/mft_abi.h
-INCLUDES=-I../include -I../../franken/include -I.
+INCLUDES=-I../include -I../../franken/include -I. -I$(SOLO5DIR)/include/solo5
 CPPFLAGS+=-nostdinc $(INCLUDES)
 CFLAGS+=-fno-stack-protector
 ELFTOOL?=$(SOLO5DIR)/elftool/solo5-elftool
@@ -137,7 +137,7 @@ $(OBJDIR)/writev.o:		writev.c $(HEADERS)
 				$(COMPILE.c) -o $@ writev.c
 
 $(CRTDIR)/manifest.o:	$(CRTDIR)/manifest.c
-				$(CC) -std=c11 -Wall -Wextra -Werror -O2 -g -ffreestanding -fno-stack-protector -nostdinc -isystem $(SOLO5DIR)/include/crt -I$(SOLO5DIR)/include/solo5 -c -o $@ $(CRTDIR)/manifest.c
+				$(COMPILE.c) -o $@ $(CRTDIR)/manifest.c
 
 $(CRTDIR)/manifest.c:	manifest.json $(HEADERS) $(ELFTOOL)
 				$(ELFTOOL) gen-manifest $< $@
