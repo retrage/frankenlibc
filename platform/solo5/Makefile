@@ -34,7 +34,7 @@ OBJ+=$(OBJDIR)/read.o
 OBJ+=$(OBJDIR)/readv.o
 OBJ+=$(OBJDIR)/write.o
 OBJ+=$(OBJDIR)/writev.o
-OBJ+=$(OBJDIR)/solo5_spt.o
+OBJ+=$(OBJDIR)/solo5_$(SOLO5TARGET).o
 HEADERS=solo5.h mft_abi.h
 INCLUDES=-I../include -I../../franken/include -I.
 CPPFLAGS+=-nostdinc $(INCLUDES)
@@ -142,7 +142,7 @@ $(CRTDIR)/manifest.o:	$(CRTDIR)/manifest.c
 $(CRTDIR)/manifest.c:	manifest.json $(HEADERS) $(ELFTOOL)
 				$(ELFTOOL) gen-manifest $< $@
 
-$(OBJDIR)/solo5_spt.o: $(SOLO5DIR)/bindings/spt/solo5_spt.o
+$(OBJDIR)/solo5_$(SOLO5TARGET).o: $(SOLO5DIR)/bindings/$(SOLO5TARGET)/solo5_$(SOLO5TARGET).o
 				cp -f $< $@
 
 .PHONY:				clean

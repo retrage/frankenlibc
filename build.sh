@@ -337,6 +337,8 @@ if [ "${OS}" = "solo5" ] && [ -z "${SOLO5TARGET}" ]; then
 	die "solo5 target is not specified"
 fi
 
+export SOLO5TARGET
+
 [ -f platform/${OS}/platform.sh ] && . platform/${OS}/platform.sh
 [ -f rumpkernel/${RUMP_KERNEL}.sh ] && . rumpkernel/${RUMP_KERNEL}.sh
 
