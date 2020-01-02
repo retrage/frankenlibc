@@ -65,12 +65,6 @@ case ${TARGET} in
 	OS=unknown
 esac
 
-if [ -n "${SOLO5}" ] ; then
-  OS=solo5
-  EXTRA_LDFLAGS="${EXTRA_LDFLAGS} -z max-page-size=0x1000"
-  ( cd solo5 && ./configure.sh && ${MAKE} )
-fi
-
 HOST=$(uname -s)
 
 case ${HOST} in
@@ -109,10 +103,11 @@ helpme()
 	printf "\tdeterministic: make deterministic\n"
 	printf "\tnotests: do not run tests\n"
 	printf "\tnotools: do not build extra tools\n"
+	printf "\tspt|hvt: select solo5 target\n"
 	printf "\tclean: clean object directory first\n"
 	printf "Other options are passed to buildrump.sh\n"
 	printf "\n"
-	printf "Supported platforms are currently: linux, netbsd, freebsd, qemu-arm, spike\n"
+	printf "Supported platforms are currently: linux, netbsd, freebsd, qemu-arm, spike solo5\n"
 	exit 1
 }
 
@@ -320,6 +315,12 @@ for arg in "$@"; do
 	"notools")
 		MAKETOOLS="no"
 		;;
+	"spt")
+		SOLO5TARGET="spt"
+		;;
+	"hvt")
+		SOLO5TARGET="hvt"
+		;;
 	*)
 		OS=${arg}
 		;;
@@ -330,6 +331,10 @@ set -e
 
 if [ "${OS}" = "unknown" ]; then
 	die "Unknown or unsupported platform"
+fi
+
+if [ "${OS}" = "solo5" ] && [ -z "${SOLO5TARGET}" ]; then
+	die "solo5 target is not specified"
 fi
 
 [ -f platform/${OS}/platform.sh ] && . platform/${OS}/platform.sh
