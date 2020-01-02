@@ -3,7 +3,7 @@
 
 #include "solo5.h"
 
-#define NSEC_PER_SEC 1000000000L
+#define NSEC_PER_SEC 1000000000ULL
 
 int clock_nanosleep(clockid_t clk_id, int flags, const struct timespec *request, struct timespec *remain)
 {
@@ -20,7 +20,8 @@ int clock_nanosleep(clockid_t clk_id, int flags, const struct timespec *request,
     return -1;
   }
 
-  deadline = request->tv_sec * NSEC_PER_SEC + request->tv_nsec;
+  deadline = solo5_clock_monotonic();
+  deadline += request->tv_sec * NSEC_PER_SEC + request->tv_nsec;
 
   /* TODO: add network device support */
   solo5_yield(deadline, NULL);
