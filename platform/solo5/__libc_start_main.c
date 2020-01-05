@@ -16,6 +16,7 @@ extern int main(int, char **, char **);
 int __franken_start_main(int (*)(int, char **, char **), int, char **, char **);
 int argc = 0;
 char **argv = NULL;
+char **envp = NULL;
 
 static int is_whitespace(char c)
 {
@@ -39,15 +40,17 @@ static void consume_space(const char **input)
 }
 
 /* imported from https://github.com/gcc-mirror/gcc/blob/master/libiberty/argv.c */
-static char **buildargv(const char *input)
+static char **build_args(const char *input)
 {
   char *arg;
   char *copybuf;
   int squote = 0;
   int dquote = 0;
   int bsquote = 0;
-  int maxargc = 0;
-  char **nargv;
+  int argsc = 0;
+  int maxargsc = 0;
+  char **args = NULL;
+  char **nargs;
 
   if (input == NULL)
     return NULL;
@@ -57,16 +60,16 @@ static char **buildargv(const char *input)
   do {
     consume_space(&input);
 
-    if ((maxargc == 0) || (argc >= (maxargc - 1))) {
-      if (argv == NULL) {
-        maxargc = SOLO5_INITIAL_MAXARGC;
-        nargv = (char **)malloc(maxargc * sizeof(char *));
+    if ((maxargsc == 0) || (argsc >= (maxargsc - 1))) {
+      if (args == NULL) {
+        maxargsc = SOLO5_INITIAL_MAXARGC;
+        nargs = (char **)malloc(maxargsc * sizeof(char *));
       } else {
-        maxargc *= 2;
-        nargv = (char **)realloc(argv, maxargc * sizeof(char *));
+        maxargsc *= 2;
+        nargs = (char **)realloc(args, maxargsc * sizeof(char *));
       }
-      argv = nargv;
-      argv[argc] = NULL;
+      args = nargs;
+      args[argsc] = NULL;
     }
 
     arg = copybuf;
@@ -104,27 +107,96 @@ static char **buildargv(const char *input)
       }
     }
     *arg = EOS;
-    argv[argc] = strdup(copybuf);
-    argc++;
-    argv[argc] = NULL;
+    args[argsc] = strdup(copybuf);
+    argsc++;
+    args[argsc] = NULL;
 
     consume_space(&input);
   } while (*input != EOS);
 
   free(copybuf);
 
-  return argv;
+  return args;
+}
+
+static void build_params(char **args)
+{
+  char **arg = args;
+  int envc = 0;
+  int maxenvc = 0;
+  int maxargc = 0;
+  char **nargv;
+  char **nenvp;
+
+  if (arg == NULL)
+    return;
+
+  /* build envp */
+  do {
+    if ((maxenvc == 0) || (envc >= (maxenvc - 1))) {
+      if (envp == NULL) {
+        maxenvc = SOLO5_INITIAL_MAXARGC;
+        nenvp = (char **)malloc(maxenvc * sizeof(char *));
+      } else {
+        maxenvc *= 2;
+        nenvp = (char **)realloc(envp, maxenvc * sizeof(char *));
+      }
+      envp = nenvp;
+      envp[envc] = NULL;
+    }
+    if (strncmp(*arg, "--", 2) == 0) {
+      envp[envc] = NULL;
+      arg++;
+      break;
+    }
+    envp[envc] = strdup(*arg);
+    envc++;
+    envp[envc] = NULL;
+    arg++;
+  } while (*arg != NULL);
+
+  /* build argv */
+  do {
+    if ((maxargc == 0) || (argc >= (maxargc - 1))) {
+      if (argv == NULL) {
+        maxargc = SOLO5_INITIAL_MAXARGC;
+        nargv = (char **)malloc(maxargc * sizeof(char *));
+      } else {
+        maxargc *= 2;
+        nargv = (char **)realloc(argv, maxargc * sizeof(char *));
+      }
+      argv = nargv;
+      argv[argc] = NULL;
+    }
+    if (*arg == NULL) {
+      argv[argc] = NULL;
+      argc++;
+      break;
+    }
+    argv[argc] = strdup(*arg);
+    argc++;
+    argv[argc] = NULL;
+    arg++;
+  } while (*arg != NULL);
+
+  free(args);
+}
+
+static void parse_cmdline(const char *input)
+{
+  char **args;
+
+  args = build_args(input);
+
+  build_params(args);
 }
 
 int solo5_app_main(const struct solo5_start_info *info)
 {
-	char **envp;
-
 	solo5_heap_start = info->heap_start;
     solo5_heap_end = info->heap_start + info->heap_size;
 
-    argv = buildargv(info->cmdline);
+    parse_cmdline(info->cmdline);
 
-    envp = argv + argc + 1;
 	return __franken_start_main(main, argc, argv, envp);
 }
