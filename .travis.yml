@@ -80,6 +80,7 @@ jobs:
         - sudo apt-get update || true
         - sudo apt-get install bc
     - stage: downstream
+      allow_failures:
       before_script:
       script: bash -e ./.travis-trigger.sh ukontainer/rumprun-packages lkl-musl
       os: linux
