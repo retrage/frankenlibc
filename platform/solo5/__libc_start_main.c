@@ -10,8 +10,7 @@
 
 #define SOLO5_INITIAL_MAXARGC 8
 
-extern uintptr_t solo5_heap_start;
-extern uintptr_t solo5_heap_end;
+extern void solo5_init_mm(const struct solo5_start_info *);
 extern int main(int, char **, char **);
 int __franken_start_main(int (*)(int, char **, char **), int, char **, char **);
 int argc = 0;
@@ -193,8 +192,7 @@ static void parse_cmdline(const char *input)
 
 int solo5_app_main(const struct solo5_start_info *info)
 {
-	solo5_heap_start = info->heap_start;
-    solo5_heap_end = info->heap_start + info->heap_size;
+	solo5_init_mm(info);
 
     parse_cmdline(info->cmdline);
 
