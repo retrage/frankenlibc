@@ -1,5 +1,5 @@
 {
   "type": "solo5.manifest",
   "version": 1,
-  "devices": [ ]
+  "devices": [ { "name": "rootfs", "type": "BLOCK_BASIC" } ]
 }

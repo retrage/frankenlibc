@@ -17,6 +17,11 @@ int argc = 0;
 char **argv = NULL;
 char **envp = NULL;
 
+#define SOLO5_ROOTFS_NAME "rootfs"
+
+solo5_handle_t solo5_rootfs_handle = 0;
+struct solo5_block_info *solo5_rootfs_info = NULL;
+
 static int is_whitespace(char c)
 {
   switch (c) {
@@ -195,6 +200,11 @@ int solo5_app_main(const struct solo5_start_info *info)
 	solo5_init_mm(info);
 
     parse_cmdline(info->cmdline);
+
+    solo5_rootfs_info = malloc(sizeof(struct solo5_block_info));
+
+    solo5_block_acquire(SOLO5_ROOTFS_NAME, &solo5_rootfs_handle,
+        solo5_rootfs_info);
 
 	return __franken_start_main(main, argc, argv, envp);
 }
