@@ -16,8 +16,6 @@
 #include <lkl.h>
 #endif
 
-#define SOLO5_ROOTFS_FD 3
-
 extern char **environ;
 
 struct lkl_netdev *lkl_netdev_rumpfd_create(const char *ifname, int fd);
@@ -144,7 +142,6 @@ void __franken_fdinit()
 		__franken_fd[n].seek = 0;
 	}
 
-#if 0
         for (n = 0, env = *environ; env; env = *(environ + n++)) {
 
 		/* XXX* useing strchr() causes undefined reference... */
@@ -213,7 +210,8 @@ void __franken_fdinit()
 #endif
 		}
 	}
-#endif
+
+#ifdef __SOLO5__
     /* XXX: on solo5, we have rootfs only */
     fd = SOLO5_ROOTFS_FD;
 
@@ -232,6 +230,7 @@ void __franken_fdinit()
     disk.dev = NULL;
     disk.fd = fd;
     disk_id = lkl_disk_add(&disk);
+#endif /* __SOLO5__ */
 }
 
 
@@ -576,6 +575,18 @@ __franken_fdinit_create()
 		}
 	}
 #endif
+
+#ifdef __SOLO5__
+    fd = SOLO5_ROOTFS_FD;
+    if (__franken_fd[fd].valid) {
+        ret = register_block(n_block++, fd,
+                     __franken_fd[fd].flags
+                     & O_ACCMODE,
+                     __franken_fd[fd].st.st_size, 1);
+        if (ret == 0)
+            __franken_fd[fd].mounted = 1;
+    }
+#endif /* __SOLO5__ */
 
 	/* now some generic stuff */
 	mount_tmpfs();

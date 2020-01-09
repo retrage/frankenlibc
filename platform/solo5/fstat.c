@@ -3,8 +3,6 @@
 
 #include "solo5.h"
 
-#define SOLO5_ROOTFS_FD 3
-
 extern struct solo5_block_info *solo5_rootfs_info;
 
 int fstat(int fd, struct stat *st)
