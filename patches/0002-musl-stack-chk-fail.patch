@@ -1,0 +1,19 @@
+diff --git a/musl/src/env/__stack_chk_fail.c b/musl/src/env/__stack_chk_fail.c
+index e32596d1..f41d1bba 100644
+--- a/musl/src/env/__stack_chk_fail.c
++++ b/musl/src/env/__stack_chk_fail.c
+@@ -12,11 +12,13 @@ void __init_ssp(void *entropy)
+ 	__pthread_self()->CANARY = __stack_chk_guard;
+ }
+ 
+-void __stack_chk_fail(void)
++void ___stack_chk_fail(void)
+ {
+ 	a_crash();
+ }
+ 
+ hidden void __stack_chk_fail_local(void);
++hidden void __stack_chk_fail(void);
+ 
+ weak_alias(__stack_chk_fail, __stack_chk_fail_local);
++weak_alias(___stack_chk_fail, __stack_chk_fail);
