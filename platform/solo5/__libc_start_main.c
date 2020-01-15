@@ -17,6 +17,8 @@ int argc = 0;
 char **argv = NULL;
 char **envp = NULL;
 
+#define SOLO5_KERNEL_NAME "solo5"
+
 #define SOLO5_ROOTFS_NAME "rootfs"
 
 solo5_handle_t solo5_rootfs_handle = 0;
@@ -160,6 +162,14 @@ static void build_params(char **args)
   } while (*arg != NULL);
 
   /* build argv */
+  if (argc == 0) {
+    maxargc = SOLO5_INITIAL_MAXARGC;
+    nargv = (char **)malloc(maxargc * sizeof(char *));
+    argv = nargv;
+    argv[argc] = SOLO5_KERNEL_NAME;
+    argc++;
+  }
+
   do {
     if ((maxargc == 0) || (argc >= (maxargc - 1))) {
       if (argv == NULL) {
