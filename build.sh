@@ -65,6 +65,11 @@ case ${TARGET} in
 	OS=unknown
 esac
 
+if [ "$(echo ${TARGET} | cut -d "-" -f1)" != "x86_64" ] \
+  && [ -n "$(${CC-cc} -v 2>&1 | grep "enable-default-pie")" ]; then
+	EXTRA_LDFLAGS="-no-pie"
+fi
+
 HOST=$(uname -s)
 
 case ${HOST} in
