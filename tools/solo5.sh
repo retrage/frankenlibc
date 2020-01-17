@@ -1,9 +1,12 @@
 #!/bin/bash
 
 ROOTFS=""
+TAP=""
 KERNEL=""
 ENVIRON=""
 ARGS=""
+
+ENVIRON="${ENVIRON} \"__RUMP_FDINFO_NET_tap=4\""
 
 for arg in $(env); do
   ENVIRON="${ENVIRON} \"${arg}\""
@@ -15,6 +18,9 @@ for arg in "$@"; do
     rootfs:*)
       ROOTFS="$(echo ${arg} | cut -d ":" -f2)"
       ;;
+    tap:*)
+      TAP="$(echo ${arg} | cut -d ":" -f2)"
+      ;;
     --|*)
       [ "${arg}" == "--" ] && ARGS_FLAG="1"
       [ -n "${ARGS_FLAG}" ] && ARGS="${ARGS} \"${arg}\""
@@ -25,9 +31,11 @@ done
 
 [ -z "${KERNEL}" ] && printf "solo5 kernel is not specified\n" && exit -1
 [ -z "${ROOTFS}" ] && printf "rootfs is not specified\n" && exit -1
+[ -z "${TAP}" ] && printf "tap is not specified\n" && exit -1
 
 @TENDER@ \
   --block:rootfs=${ROOTFS} \
+  --net:tap=${TAP} \
   ${KERNEL} \
   ${ENVIRON} \
   ${ARGS}

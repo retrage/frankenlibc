@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <poll.h>
 
 #include "solo5.h"
 
@@ -17,12 +18,20 @@ int argc = 0;
 char **argv = NULL;
 char **envp = NULL;
 
+int __platform_npoll = 0;
+struct pollfd __platform_pollfd[1];
+
 #define SOLO5_KERNEL_NAME "solo5"
 
 #define SOLO5_ROOTFS_NAME "rootfs"
 
 solo5_handle_t solo5_rootfs_handle = 0;
 struct solo5_block_info *solo5_rootfs_info = NULL;
+
+#define SOLO5_NET_NAME "tap"
+
+solo5_handle_t solo5_net_handle = 0;
+struct solo5_net_info *solo5_net_info = NULL;
 
 static int is_whitespace(char c)
 {
@@ -217,6 +226,15 @@ int solo5_app_main(const struct solo5_start_info *info)
 
     solo5_block_acquire(SOLO5_ROOTFS_NAME, &solo5_rootfs_handle,
         solo5_rootfs_info);
+
+    solo5_net_info = malloc(sizeof(struct solo5_net_info));
+
+    solo5_net_acquire(SOLO5_NET_NAME, &solo5_net_handle,
+        solo5_net_info);
+
+    __platform_pollfd[__platform_npoll].fd = SOLO5_NET_FD;
+    __platform_pollfd[__platform_npoll].events = POLLIN | POLLPRI | POLLOUT;
+    __platform_npoll++;
 
 	return __franken_start_main(main, argc, argv, envp);
 }

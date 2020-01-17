@@ -247,6 +247,23 @@ void __franken_fdinit()
     disk.fd = fd;
     disk_id = lkl_disk_add(&disk);
 #endif /* __SOLO5__ */
+
+#ifdef __SOLO5__
+    /* XXX: on solo5, we have net only */
+    fd = SOLO5_NET_FD;
+
+    __franken_fd[fd].valid = 1;
+    __franken_fd[fd].flags = fcntl(fd, F_GETFL, 0);
+
+    memset(&st, 0, sizeof(struct stat));
+    if (fstat(fd, &st) == -1) {
+        __franken_fd[n].valid = 0;
+    }
+    memcpy(&__franken_fd[fd].st, &st, sizeof(struct stat));
+
+    __franken_fd[fd].seek = 0;
+    lkl_netdev_rumpfd_create(NULL, fd);
+#endif /* __SOLO5__ */
 }
 
 
