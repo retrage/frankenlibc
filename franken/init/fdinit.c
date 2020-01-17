@@ -212,6 +212,22 @@ void __franken_fdinit()
 	}
 
 #ifdef __SOLO5__
+    extern char *lkl_json_config;
+    int ret;
+
+    json_cfg = (struct lkl_config *)malloc(sizeof(struct lkl_config));
+    if (!json_cfg) {
+      printf("malloc error\n");
+      return;
+    }
+    memset(json_cfg, 0, sizeof(struct lkl_config));
+
+	ret = lkl_load_config_json(json_cfg, lkl_json_config);
+    if (ret < 0)
+      printf("load_config_json error \n\n%s\n", lkl_json_config);
+#endif /* __SOLO5__ */
+
+#ifdef __SOLO5__
     /* XXX: on solo5, we have rootfs only */
     fd = SOLO5_ROOTFS_FD;
 

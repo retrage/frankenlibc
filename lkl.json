@@ -13,5 +13,5 @@
     "debug": "1",
     "singlecpu": "1",
     "delay_main": "50000",
-    "sysctl": "net.ipv4.tcp_wmem=4096 87380 2147483647;net.mptcp.mptcp_debug=1"
+    "sysctl": "net.ipv4.tcp_wmem=4096 87380 2147483647"
 }

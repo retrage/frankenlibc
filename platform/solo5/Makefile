@@ -34,6 +34,7 @@ OBJ+=$(OBJDIR)/read.o
 OBJ+=$(OBJDIR)/readv.o
 OBJ+=$(OBJDIR)/write.o
 OBJ+=$(OBJDIR)/writev.o
+OBJ+=$(OBJDIR)/lkl_config.o
 OBJ+=$(OBJDIR)/solo5_$(SOLO5TARGET).o
 HEADERS=solo5.h mft_abi.h
 INCLUDES=-I../include -I../../franken/include -I.
@@ -144,6 +145,12 @@ $(CRTDIR)/manifest.c:	manifest.json $(HEADERS) $(ELFTOOL)
 
 $(OBJDIR)/solo5_$(SOLO5TARGET).o: $(SOLO5DIR)/bindings/$(SOLO5TARGET)/solo5_$(SOLO5TARGET).o
 				cp -f $< $@
+
+$(OBJDIR)/lkl_config.o:	$(OBJDIR)/lkl_config.c
+				$(COMPILE.c) -o $@ $(OBJDIR)/lkl_config.c
+
+$(OBJDIR)/lkl_config.c:	gen-config.sh ../../lkl.json
+				bash gen-config.sh ../../lkl.json $@
 
 .PHONY:				clean
 clean:		
