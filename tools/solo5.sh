@@ -26,7 +26,7 @@ done
 [ -z "${KERNEL}" ] && printf "solo5 kernel is not specified\n" && exit -1
 [ -z "${ROOTFS}" ] && printf "rootfs is not specified\n" && exit -1
 
-solo5/tenders/spt/solo5-spt \
+@TENDER@ \
   --block:rootfs=${ROOTFS} \
   ${KERNEL} \
   ${ENVIRON} \

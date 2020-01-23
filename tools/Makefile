@@ -8,6 +8,7 @@ OBJ=$(OBJDIR)/rexec.o
 INC=rexec.h
 DEPS=$(INC) $(OBJDIR) $(BINDIR)
 PLATFORMS=freebsd linux netbsd qemu-arm spike darwin solo5
+TENDER=$(abspath ../solo5/tenders/$(SOLO5TARGET)/solo5-$(SOLO5TARGET))
 
 default:		linux
 
@@ -51,7 +52,7 @@ spike:			spike.sh $(BINDIR)
 			cp spike.sh $(BIN)
 
 solo5:			solo5.sh $(BINDIR)
-			cp solo5.sh $(BIN)
+			cat solo5.sh | sed -e "s#@TENDER@#$(TENDER)#g" > $(BIN)
 
 .PHONY:			clean $(PLATFORMS)
 clean:		
