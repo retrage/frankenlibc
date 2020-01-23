@@ -103,7 +103,7 @@ helpme()
 	printf "\tdeterministic: make deterministic\n"
 	printf "\tnotests: do not run tests\n"
 	printf "\tnotools: do not build extra tools\n"
-	printf "\tspt|hvt: select solo5 target\n"
+	printf "\tspt|hvt: select solo5 target (default spt)\n"
 	printf "\tclean: clean object directory first\n"
 	printf "Other options are passed to buildrump.sh\n"
 	printf "\n"
@@ -278,6 +278,8 @@ fi
 
 if [ -z ${BINDIR+x} ]; then BINDIR=${OUTDIR}/bin; fi
 
+SOLO5TARGET=spt
+
 for arg in "$@"; do
         case ${arg} in
 	"clean")
@@ -315,11 +317,8 @@ for arg in "$@"; do
 	"notools")
 		MAKETOOLS="no"
 		;;
-	"spt")
-		SOLO5TARGET="spt"
-		;;
-	"hvt")
-		SOLO5TARGET="hvt"
+	"spt"|"hvt")
+		SOLO5TARGET=${arg}
 		;;
 	*)
 		OS=${arg}
@@ -331,10 +330,6 @@ set -e
 
 if [ "${OS}" = "unknown" ]; then
 	die "Unknown or unsupported platform"
-fi
-
-if [ "${OS}" = "solo5" ] && [ -z "${SOLO5TARGET}" ]; then
-	die "solo5 target is not specified"
 fi
 
 export SOLO5TARGET
