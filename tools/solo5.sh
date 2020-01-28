@@ -1,7 +1,8 @@
 #!/bin/bash
 
-ROOTFS=""
-TAP=""
+# XXX: solo5 tenders require explicitly specify devices.
+ROOTFS="disk.img"
+TAP="tap100"
 KERNEL=""
 ENVIRON=""
 ARGS=""
@@ -30,8 +31,8 @@ for arg in "$@"; do
 done
 
 [ -z "${KERNEL}" ] && printf "solo5 kernel is not specified\n" && exit -1
-[ -z "${ROOTFS}" ] && printf "rootfs is not specified\n" && exit -1
-[ -z "${TAP}" ] && printf "tap is not specified\n" && exit -1
+[ ! -e "${ROOTFS}" ] && printf "rootfs ${ROOTFS} does not exist\n" && exit -1
+[ -z "$(ip addr show ${TAP})" ] && "tap ${TAP} does not exist\n" && exit -1
 
 @TENDER@ \
   --block:rootfs=${ROOTFS} \
