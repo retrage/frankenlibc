@@ -14,6 +14,7 @@ DEPS=$(LIBDIR)/libc.a
 OBJ=$(OBJDIR)/hello $(OBJDIR)/ctor $(OBJDIR)/cat
 OBJ+=$(OBJDIR)/fork-test $(OBJDIR)/hello-pthread
 OBJ+=$(OBJDIR)/lkick $(OBJDIR)/misc
+OBJ+=$(OBJDIR)/echo-server
 ifneq ($(wildcard $(CXX)),)
 OBJ+=$(OBJDIR)/hellopp
 endif
@@ -73,6 +74,10 @@ $(OBJDIR)/lkick:	lkick.c $(DEPS)
 $(OBJDIR)/misc:		misc.c $(DEPS)
 			@mkdir -p $(OBJDIR)
 			${CC} ${CFLAGS} ${LDFLAGS} -o $@ misc.c
+
+$(OBJDIR)/echo-server:	echo-server.c $(DEPS)
+			@mkdir -p $(OBJDIR)
+			${CC} ${CFLAGS} ${LDFLAGS} -o $@ echo-server.c
 
 .PHONY:			test clean
 clean:		
