@@ -12,6 +12,7 @@ CRTFILES+=$(CRTDIR)/crtbegin.o $(CRTDIR)/crtbeginT.o
 CRTFILES+=$(CRTDIR)/manifest.o
 CRTFILES+=$(CRTDIR)/crtend.o
 OBJ=$(CRTFILES)
+OBJ+=$(OBJDIR)/argv.o
 OBJ+=$(OBJDIR)/clock_getres.o
 OBJ+=$(OBJDIR)/clock_gettime.o
 OBJ+=$(OBJDIR)/clock_nanosleep.o
@@ -68,6 +69,9 @@ $(CRTDIR)/crtbeginT.o:		$(CRTDIR)
 
 $(CRTDIR)/crtend.o:		$(CRTDIR)
 				printf "\n" | $(COMPILE.c) -o $@ -x c -
+
+$(OBJDIR)/argv.o:	argv.c $(HEADERS)
+				$(COMPILE.c) -o $@ argv.c
 
 $(OBJDIR)/clock_getres.o:	clock_getres.c $(HEADERS)
 				$(COMPILE.c) -o $@ clock_getres.c
