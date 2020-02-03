@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-2-Clause */
+
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>

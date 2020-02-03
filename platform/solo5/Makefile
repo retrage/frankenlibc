@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BSD-2-Clause
 COMPILE.c?=$(CC) -c $(CPPFLAGS) $(CFLAGS)
 COMPILE.S?=$(CC) -c $(CPPFLAGS) $(ASFLAGS)
 SOLO5DIR?=../../solo5

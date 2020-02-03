@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-2-Clause */
+
 #include <unistd.h>
 
 #if defined(__x86_64__)

@@ -1,4 +1,5 @@
 #!/bin/sh
+# SPDX-License-Identifier: BSD-2-Clause
 
 (cd ${PWD}/solo5 && ./configure.sh && ${MAKE})
 

@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-2-Clause */
+
 #include <sys/mman.h>
 #include <errno.h>
 
