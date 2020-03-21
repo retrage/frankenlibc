@@ -31,6 +31,8 @@ SRCS+=	jemalloc.c
 .else
 SRCS+=	malloc.c
 .endif
+.else
+SRCS+=  malloc_rump.c
 .endif
 
 CPPFLAGS.strtol.c+=	-I${LIBCDIR}/../../common/lib/libc/stdlib

@@ -552,9 +552,13 @@ mkdir -p ${RUMPOBJ}/explode/platform
 		if [ "${CC}" = "arm-linux-gnueabihf-gcc" ] ; then
 			appendvar LDFLAGS_LIBCSO "-static"
 		fi
-		${CC-cc} $LDFLAGS_LIBCSO -o libc.so \
-			 rumpkernel/rumpkernel.o rumpuser/*.o ${LIBC_DIR}/*.o franken/*.o \
-			 platform/*.o ${LIBC_DIR}/*.lo -lgcc -lgcc_eh
+
+		LIBCSO_OBJS="rumpkernel/rumpkernel.o rumpuser/*.o ${LIBC_DIR}/*.o \
+						franken/*.o platform/*.o"
+		if [ "${RUMP_KERNEL}" = "linux" ] ; then
+			appendvar LIBCSO_OBJS "${LIBC_DIR}/*.lo"
+		fi
+		${CC-cc} $LDFLAGS_LIBCSO -o libc.so $LIBCSO_OBJS -lgcc -lgcc_eh
 	fi
 )
 

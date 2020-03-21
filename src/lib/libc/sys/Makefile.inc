@@ -190,6 +190,8 @@ ASMDEPS=	${.CURDIR}/sys/Makefile.inc ${ARCHDIR}/SYS.h \
 		${DESTDIR}/usr/include/sys/syscall.h
 
 _LINTASM=	${ASM:Nsa_*.S} ${WEAKASM:Nsa_*.S}
+.else
+SRCS+=      _exit_rump.c kill_rump.c mmap_rump.c munmap_rump.c
 .endif # RUMPRUN != yes
 
 ${ASM}: ${ASMDEPS}

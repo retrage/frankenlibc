@@ -12,8 +12,10 @@ CFLAGS+=
 DEPS=$(LIBDIR)/libc.a
 
 OBJ=$(OBJDIR)/hello $(OBJDIR)/ctor $(OBJDIR)/cat
+ifeq ($(wildcard $(RUMP_KERNEL)),linux)
 OBJ+=$(OBJDIR)/fork-test $(OBJDIR)/hello-pthread
 OBJ+=$(OBJDIR)/lkick $(OBJDIR)/misc
+endif
 ifneq ($(wildcard $(CXX)),)
 OBJ+=$(OBJDIR)/hellopp
 endif

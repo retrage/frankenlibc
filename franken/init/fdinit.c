@@ -18,7 +18,9 @@
 
 extern char **environ;
 
+#ifdef MUSL_LIBC
 struct lkl_netdev *lkl_netdev_rumpfd_create(const char *ifname, int fd);
+#endif
 
 /* FIXME: from sys/mount.h */
 #define MS_RDONLY	 1	/* Mount read-only */
@@ -170,8 +172,10 @@ void __franken_fdinit()
 		}
 
 		if (strncmp(env, "__RUMP_FDINFO_CONFIGJSON", 24) == 0) {
+#ifdef MUSL_LIBC
 			/* fd for config json */
 			franken_lkl_load_json_config(fd);
+#endif
 		}
 
 		if (strncmp(env, "__RUMP_FDINFO_ROOT", 18) == 0 ||
@@ -192,7 +196,9 @@ void __franken_fdinit()
 			 * create lkl_netdev for this rumpfd.
 			 */
 			__franken_fd[fd].seek = 0;
+#ifdef MUSL_LIBC
 			lkl_netdev_rumpfd_create(NULL, fd);
+#endif
 		}
 
 #ifdef MUSL_LIBC
@@ -207,8 +213,8 @@ void __franken_fdinit()
 			fs.dev = NULL;
 			fs.fd = atoi(tmpfd);
 			lkl_9pfs_add(&fs);
-#endif
 		}
+#endif
 	}
 }
 
@@ -363,7 +369,7 @@ register_net(int fd)
 		/* enable offload features */
 		sock = rump___sysimpl_socket30(af, SOCK_STREAM, 0);
 		if (sock != -1) {
-			strncpy(&cap.ifcr_name, key, IFNAMSIZ);
+			strncpy((char *)&cap.ifcr_name, key, IFNAMSIZ);
 			ret = rump___sysimpl_ioctl(sock, SIOCGIFCAP, &cap);
 			if (ret != -1) {
 				cap.ifcr_capenable = cap.ifcr_capabilities;

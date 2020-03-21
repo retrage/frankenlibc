@@ -5,6 +5,7 @@ rumpkernel_buildrump()
 ./buildrump/buildrump.sh \
 	-V RUMP_CURLWP=hypercall -V RUMP_LOCKS_UP=yes \
 	-V MKPIC=no -V RUMP_KERNEL_IS_LIBC=1 \
+	-F CPPFLAGS=-Wno-implicit-fallthrough \
 	-F CFLAGS=-fno-stack-protector \
 	-k -s ${RUMPSRC} -o ${RUMPOBJ} -d ${RUMP} \
 	${BUILD_QUIET} ${STDJ} \
