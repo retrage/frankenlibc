@@ -12,7 +12,7 @@ CFLAGS+=
 DEPS=$(LIBDIR)/libc.a
 
 OBJ=$(OBJDIR)/hello $(OBJDIR)/ctor $(OBJDIR)/cat
-ifeq ($(wildcard $(RUMP_KERNEL)),linux)
+ifneq ($(wildcard $(shell $(CC) -dM -E - < /dev/null | grep CONFIG_LKL)),)
 OBJ+=$(OBJDIR)/fork-test $(OBJDIR)/hello-pthread
 OBJ+=$(OBJDIR)/lkick $(OBJDIR)/misc
 endif
@@ -36,9 +36,11 @@ ifneq ($(wildcard $(OBJDIR)/ping),)
 			${REXEC} ${OBJDIR}/ping rootfs:disk.img -- -c 3 127.0.0.1
 			${REXEC} ${OBJDIR}/ping6 rootfs:disk.img -- -c 3 ::1
 endif
+ifneq ($(wildcard $(OBJDIR)/fork-test),)
 			RUMP_VERBOSE=1 ${REXEC} $(OBJDIR)/fork-test rootfs:disk.img
 			RUMP_VERBOSE=1 ${REXEC} $(OBJDIR)/misc
 			${REXEC} $(OBJDIR)/hello-pthread
+endif
 ifneq ($(wildcard $(OBJDIR)/hellopp),)
 			${REXEC} $(OBJDIR)/hellopp
 endif
