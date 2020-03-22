@@ -6,6 +6,10 @@ rumpkernel_buildrump()
 	-V RUMP_CURLWP=hypercall -V RUMP_LOCKS_UP=yes \
 	-V MKPIC=no -V RUMP_KERNEL_IS_LIBC=1 \
 	-F CPPFLAGS=-Wno-implicit-fallthrough \
+	-F CPPFLAGS=-Wno-constant-conversion \
+	-F CPPFLAGS=-Wno-void-pointer-to-int-cast \
+	-F CPPFLAGS=-Wno-address-of-packed-member \
+	-F CPPFLAGS=-Wno-varargs \
 	-F CFLAGS=-fno-stack-protector \
 	-k -s ${RUMPSRC} -o ${RUMPOBJ} -d ${RUMP} \
 	${BUILD_QUIET} ${STDJ} \
