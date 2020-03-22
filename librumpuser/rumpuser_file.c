@@ -139,7 +139,7 @@ rumpuser_bio(int fd, int op, void *data, size_t dlen, int64_t doff,
 
 	assert(biodone != NULL);
 
-	if (__franken_fd[fd].valid == 0 || ! S_ISBLK(__franken_fd[fd].st.st_mode))
+	if (__franken_fd[fd].valid == 0)
 		biodone(bioarg, 0, EBADF);
 
 	if (op & RUMPUSER_BIO_READ) {
