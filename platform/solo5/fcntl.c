@@ -12,5 +12,6 @@ int fcntl(int fd, int cmd, ...)
   if (fd == SOLO5_NET_FD && cmd == F_GETFL)
     return O_RDWR;
 
-  return EINVAL;
+  errno = EINVAL;
+  return -1;
 }
