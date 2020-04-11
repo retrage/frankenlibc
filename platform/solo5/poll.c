@@ -26,7 +26,7 @@ int poll(struct pollfd *fds, nfds_t n, int timeout)
 
   if (timeout == 0) {
     solo5_yield(deadline, &ready_set);
-    if (ready_set & solo5_net_handle) {
+    if (ready_set & 1U << solo5_net_handle) {
       for (i = 0; i < (int)n; i++) {
         if (fds[i].fd == SOLO5_NET_FD) {
           fds[i].revents = POLLIN;
@@ -56,21 +56,4 @@ int poll(struct pollfd *fds, nfds_t n, int timeout)
   }
 
   return ret;
-
-#if 0
-  if (n != 1 || fds[0].fd != SOLO5_NET_FD)
-    return n;
-
-  if (timeout < 0)
-    timeout = DEFAULT_TIMEOUT;
-
-  deadline = solo5_clock_monotonic();
-
-  solo5_yield(deadline, &ready_set);
-
-  if (ready_set & solo5_net_handle)
-    return n;
-
-  return n;
-#endif
 }
