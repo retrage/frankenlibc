@@ -20,6 +20,7 @@ struct pollfd __platform_pollfd[1];
 
 solo5_handle_t solo5_rootfs_handle = 0;
 struct solo5_block_info *solo5_rootfs_info = NULL;
+off_t solo5_rootfs_offset = 0;
 
 #define SOLO5_NET_NAME "tap"
 
