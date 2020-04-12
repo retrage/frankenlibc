@@ -1,0 +1,21 @@
+diff --git a/linux/arch/lkl/kernel/threads.c b/linux/arch/lkl/kernel/threads.c
+index 7688e62e7b24..d95a716cfdbd 100644
+--- a/linux/arch/lkl/kernel/threads.c
++++ b/linux/arch/lkl/kernel/threads.c
+@@ -156,13 +156,14 @@ void inline lkl_restore_register(struct task_struct *task)
+ 	void *newrsp;
+ 	unsigned long newrbp, stack_size;
+ 
++	extern unsigned long solo5_stack_base;
++
+ #define RESTORE_REG(r)				\
+ 	asm("mov %0, %%"#r :: "m"(task_pt_regs(task)->regs.r));
+ 
+ 	/* XXX: copy & restore sp, need to free... */
+ #define FORK_STACK_SIZE 1200
+-	stack_size = STACK_TOP - 8 - task_pt_regs(task)->regs.sp;
+-	stack_size = stack_size > FORK_STACK_SIZE ? FORK_STACK_SIZE : stack_size;
++	stack_size = solo5_stack_base - task_pt_regs(task)->regs.sp;
+ 	pr_info("regs.sp=%lx, ssize=%lu", task_pt_regs(task)->regs.sp, stack_size);
+ 	newrsp = kmalloc(stack_size, GFP_KERNEL);
+ 	memcpy(newrsp, (void *)task_pt_regs(task)->regs.sp, stack_size);

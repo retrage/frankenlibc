@@ -16,6 +16,8 @@ char **envp = NULL;
 int __platform_npoll = 0;
 struct pollfd __platform_pollfd[1];
 
+unsigned long rumpns_solo5_stack_base = 0;
+
 #define SOLO5_ROOTFS_NAME "rootfs"
 
 solo5_handle_t solo5_rootfs_handle = 0;
@@ -29,6 +31,8 @@ struct solo5_net_info *solo5_net_info = NULL;
 
 int solo5_app_main(const struct solo5_start_info *info)
 {
+	__asm__ volatile ("mov %%rbp, %0":"=m"(rumpns_solo5_stack_base));
+
 	solo5_init_mm(info);
 
     parse_cmdline(info->cmdline);
