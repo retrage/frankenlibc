@@ -100,6 +100,7 @@ jobs:
       if: branch = lkl-musl-macho
 
 before_script:
+  - travis_wait 30 git clone https://github.com/Solo5/solo5.git
   - travis_wait 30 git submodule update --init
   - export -f travis_fold
 script:
