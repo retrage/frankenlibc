@@ -12,6 +12,7 @@ int __franken_start_main(int (*)(int, char **, char **), int, char **, char **);
 int argc = 0;
 char **argv = NULL;
 char **envp = NULL;
+char *lkl_json_config = NULL;
 
 int __platform_npoll = 0;
 struct pollfd __platform_pollfd[1];

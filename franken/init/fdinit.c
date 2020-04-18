@@ -215,6 +215,9 @@ void __franken_fdinit()
     extern char *lkl_json_config;
     int ret;
 
+    if (!lkl_json_config)
+      return;
+
     json_cfg = (struct lkl_config *)malloc(sizeof(struct lkl_config));
     if (!json_cfg) {
       printf("malloc error\n");

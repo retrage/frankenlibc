@@ -14,6 +14,7 @@
 extern int argc;
 extern char **argv;
 extern char **envp;
+extern char *lkl_json_config;
 
 static int is_whitespace(char c)
 {
@@ -140,6 +141,12 @@ static void build_params(char **args)
       }
       envp = nenvp;
       envp[envc] = NULL;
+    }
+    if (strncmp(*arg, "-c", 2) == 0 || strncmp(*arg, "--config", 8) == 0) {
+      arg++;
+      if (*arg == NULL)
+        break;
+      lkl_json_config = strdup(*arg);
     }
     if (strncmp(*arg, "--", 2) == 0) {
       envp[envc] = NULL;

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+CONFIG="{\\\"gateway\\\":\\\"10.0.0.1\\\",\\\"interfaces\\\":[{\\\"ip\\\":\\\"10.0.0.2\\\",\\\"masklen\\\":\\\"16\\\",\\\"mac\\\":\\\"00:0d:0b:94:4e:97\\\",\\\"name\\\":\\\"tap\\\",\\\"type\\\":\\\"rumpfd\\\"}],\\\"debug\\\":\\\"1\\\",\\\"singlecpu\\\":\\\"1\\\",\\\"delay_main\\\":\\\"50000\\\",\\\"sysctl\\\":\\\"net.ipv4.tcp_wmem=4096\ 87380\ 2147483647\\\"}"
 # XXX: solo5 tenders require explicitly specify devices.
 ROOTFS="disk.img"
 TAP="tap100"
@@ -39,4 +40,5 @@ done
   --net:tap=${TAP} \
   ${KERNEL} \
   ${ENVIRON} \
+  --config ${CONFIG} \
   ${ARGS}
