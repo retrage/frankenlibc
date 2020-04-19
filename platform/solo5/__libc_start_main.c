@@ -7,7 +7,8 @@
 
 extern void solo5_init_mm(const struct solo5_start_info *);
 extern void parse_cmdline(const char *);
-extern int main(int, char **, char **);
+int __solo5_main(int argc, char **argv, char **envp) { return 0; }
+int main(int, char **, char **) __attribute__((weak, alias("__solo5_main")));
 int __franken_start_main(int (*)(int, char **, char **), int, char **, char **);
 int argc = 0;
 char **argv = NULL;
