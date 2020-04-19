@@ -60,8 +60,8 @@ $(CRTDIR)/crti.o:		$(CRTDIR)
 $(CRTDIR)/crtn.o:		$(CRTDIR)
 				printf "\n" | $(COMPILE.c) -o $@ -x c -
 
-$(CRTDIR)/crtbegin.o:		$(CRTDIR)
-				printf "\n" | $(COMPILE.c) -o $@ -x c -
+$(CRTDIR)/crtbegin.o:		crtbegin.c $(CRTDIR)
+				$(COMPILE.c) -o $@ crtbegin.c
 
 $(CRTDIR)/crtbeginT.o:		$(CRTDIR)
 				printf "\n" | $(COMPILE.c) -o $@ -x c -
