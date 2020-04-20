@@ -38,6 +38,10 @@ export RUMPOBJ
 EXTRA_AFLAGS="-Wa,--noexecstack"
 EXTRA_CFLAGS="-fPIC"
 
+if [ -n "$(${CC-cc} -v 2>&1 | grep "clang")" ]; then
+	HAS_CXX="1"
+fi
+
 if [ -n "$(${CC-cc} -v 2>&1 | grep "enable-default-pie")" ]; then
   LDFLAGS_NO_PIE="-no-pie"
 fi
@@ -333,6 +337,9 @@ if [ "${OS}" = "unknown" ]; then
 fi
 
 export SOLO5TARGET
+if [ "${OS}" = "solo5" ]; then
+	HAS_CXX="1"
+fi
 
 [ -f platform/${OS}/platform.sh ] && . platform/${OS}/platform.sh
 [ -f rumpkernel/${RUMP_KERNEL}.sh ] && . rumpkernel/${RUMP_KERNEL}.sh
@@ -652,12 +659,12 @@ else
 		-e "s/--sysroot=[^ ]*//" \
 		> ${OUTDIR}/lib/${TOOL_PREFIX}gcc.spec
 	printf "#!/bin/sh\n\nexec ${CC-cc} -specs ${OUTDIR}/lib/${TOOL_PREFIX}gcc.spec ${COMPILER_FLAGS} -nostdinc -isystem ${OUTDIR}/include \"\$@\"\n" > ${BINDIR}/${TOOL_PREFIX}-gcc
-	printf "#!/bin/sh\n\nexec ${CXX-c++} -specs ${OUTDIR}/lib/${TOOL_PREFIX}gcc.spec ${COMPILER_CXX_FLAGS} ${COMPILER_FLAGS} -nostdinc -isystem ${OUTDIR}/include \"\$@\"\n" > ${BINDIR}/${TOOL_PREFIX}-g++
+	if [ -n "${HAS_CXX}" ] ; then printf "#!/bin/sh\n\nexec ${CXX-c++} -specs ${OUTDIR}/lib/${TOOL_PREFIX}gcc.spec ${COMPILER_CXX_FLAGS} ${COMPILER_FLAGS} -nostdinc -isystem ${OUTDIR}/include \"\$@\"\n" > ${BINDIR}/${TOOL_PREFIX}-g++ ; fi
 	( cd ${BINDIR}
 	  ln -s ${TOOL_PREFIX}-gcc ${TOOL_PREFIX}-cc
 	  ln -s ${TOOL_PREFIX}-gcc rumprun-cc
-	  ln -s ${TOOL_PREFIX}-g++ ${TOOL_PREFIX}-c++
-	  ln -s ${TOOL_PREFIX}-g++ rumprun-c++
+	  if [ -n "${HAS_CXX}" ] ; then ln -s ${TOOL_PREFIX}-g++ ${TOOL_PREFIX}-c++ ; fi
+	  if [ -n "${HAS_CXX}" ] ; then ln -s ${TOOL_PREFIX}-g++ rumprun-c++ ; fi
 	)
 fi
 printf "#!/bin/sh\n\nexec ${AR-ar} \"\$@\"\n" > ${BINDIR}/${TOOL_PREFIX}-ar
@@ -698,7 +705,7 @@ fi
 
 write_log " done"
 
-if $(${CC-cc} -v 2>&1 | grep -q clang)
+if [ -n "${HAS_CXX}" ]
 then
 write_log "-n" "building libcxx.."
 rumpkernel_install_libcxx
