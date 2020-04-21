@@ -120,14 +120,28 @@ static char **build_args(const char *input)
 static void build_params(char **args)
 {
   char **arg = args;
+  int bufc = 0;
+  char *bufs;
+  char *bufp;
   int envc = 0;
   int maxenvc = 0;
+  int isconf = 0;
   int maxargc = 0;
   char **nargv;
   char **nenvp;
 
   if (arg == NULL)
     return;
+
+  bufc += strlen(SOLO5_KERNEL_NAME) + 1;
+  for (; *arg != NULL; arg++)
+    bufc += strlen(*arg) + 1;
+
+  bufs = (char *)malloc(bufc);
+  memset(bufs, '\0', bufc);
+
+  arg = args;
+  bufp = bufs;
 
   /* build envp */
   do {
@@ -146,27 +160,37 @@ static void build_params(char **args)
       arg++;
       if (*arg == NULL)
         break;
-      lkl_json_config = strdup(*arg);
+      isconf = 1;
+      lkl_json_config = strcpy(bufp, *arg);
+      bufp += strlen(bufp) + 1;
     }
     if (strncmp(*arg, "--", 2) == 0) {
       envp[envc] = NULL;
       arg++;
       break;
     }
-    envp[envc] = strdup(*arg);
-    envc++;
-    envp[envc] = NULL;
+    if (isconf == 0) {
+      envp[envc] = strcpy(bufp, *arg);
+      bufp += strlen(bufp) + 1;
+      envc++;
+      envp[envc] = NULL;
+    } else
+      isconf = 0;
     arg++;
   } while (*arg != NULL);
 
   /* insert pseudo first argument */
-  if (argc == 0) {
-    maxargc = SOLO5_INITIAL_MAXARGC;
-    nargv = (char **)malloc(maxargc * sizeof(char *));
-    argv = nargv;
-    argv[argc] = SOLO5_KERNEL_NAME;
-    if (*arg != NULL)
-      argc++;
+  argc = 0;
+  maxargc = SOLO5_INITIAL_MAXARGC;
+  nargv = (char **)malloc(maxargc * sizeof(char *));
+  argv = nargv;
+  argv[argc] = strcpy(bufp, SOLO5_KERNEL_NAME);
+  bufp += strlen(bufp) + 1;
+  argc++;
+  if (*arg == NULL) {
+    /* no argument */
+    argv[argc] = NULL;
+    goto done;
   }
 
   /* build argv */
@@ -187,12 +211,14 @@ static void build_params(char **args)
       argc++;
       break;
     }
-    argv[argc] = strdup(*arg);
+    argv[argc] = strcpy(bufp, *arg);
+    bufp += strlen(bufp) + 1;
     argc++;
     argv[argc] = NULL;
     arg++;
   } while (*arg != NULL);
 
+done:
   free(args);
 }
 
