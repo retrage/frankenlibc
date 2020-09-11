@@ -14,6 +14,8 @@
 #include "mips/makecontext.c"
 #elif defined(__riscv64)
 #include "riscv64/makecontext.c"
+#elif defined(__EMSCRIPTEN__)
+#include "js/makecontext.c"
 #else
 #error "Unknown architecture"
 #endif

@@ -22,9 +22,9 @@ $(OBJDIR)/makecontext.o:	makecontext.c
 				@mkdir -p $(OBJDIR)
 				$(COMPILE.c) -o $@ makecontext.c
 
-$(OBJDIR)/swapcontext.o:	swapcontext.S
+$(OBJDIR)/swapcontext.o:	swapcontext.c
 				@mkdir -p $(OBJDIR)
-				$(COMPILE.S) -o $@ swapcontext.S
+				$(COMPILE.c) -o $@ swapcontext.c
 
 .PHONY:				clean
 clean:		

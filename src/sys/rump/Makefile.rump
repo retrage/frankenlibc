@@ -229,13 +229,7 @@ __archivebuild: .USE
 	rm -f ${.TARGET}
 .endif
 	for renameobj in ${RUMP_SYMREN:U${.ALLSRC:C/(${RUMPOBJ_NORENAME:ts|})//g}}; do \
-		${NM} -go $${renameobj} | ${TOOL_AWK} ' \
-		    $$NF!~/^'${_PQ}'(rump|RUMP|__|_GLOBAL_OFFSET_TABLE'${_SYMQUIRK}'${RUMP_SYM_NORENAME:D|${RUMP_SYM_NORENAME}})/ \
-		      {s=$$NF;sub(/^'${_PQ}'/, "&rumpns_", s); print $$NF, s}'\
-		    | sort | uniq  > renametab.$${renameobj}; \
-		${OBJCOPY} --preserve-dates --redefine-syms \
-		    renametab.$${renameobj} $${renameobj}; \
-		rm -f renametab.$${renameobj}; \
+	  	opt -load /home/akira/src/llvm/build/lib/LLVMRedefineSyms.so -rumpns_redefine_syms $${renameobj} -o $${renameobj}; \
 	done
 .if !defined(RUMP_SYMREN)
 	${AR} ${_ARFL} ${.TARGET} \

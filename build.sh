@@ -38,6 +38,8 @@ export RUMPOBJ
 EXTRA_AFLAGS="-Wa,--noexecstack"
 EXTRA_CFLAGS="-fPIC"
 
+JS_COMMON_FLAGS="-O0 -g -g4 -s ASYNCIFY=1 -s INITIAL_MEMORY=268435456"
+
 if [ -n "$(${CC-cc} -v 2>&1 | grep "enable-default-pie")" ]; then
   LDFLAGS_NO_PIE="-no-pie"
 fi
@@ -61,6 +63,11 @@ case ${TARGET} in
 	EXTRA_CFLAGS="-mmacosx-version-min=10.7.0 -Wno-unsupported-visibility"
 	EXTRA_AFLAGS="-mmacosx-version-min=10.7.0"
 	;;
+*-emscripten*)
+    OS=js
+    EXTRA_CFLAGS="${JS_COMMON_FLAGS} -emit-llvm"
+    EXTRA_LDFLAGS="${JS_COMMON_FLAGS} -emit-llvm"
+    ;;
 *)
 	OS=unknown
 esac
@@ -326,6 +333,12 @@ if [ "${OS}" = "unknown" ]; then
 	die "Unknown or unsupported platform"
 fi
 
+if [ "${OS}" != "js" ] && [ "${CC}" = "emcc" ]; then
+	OS=js
+	appendvar EXTRA_CFLAGS "${JS_COMMON_FLAGS} -emit-llvm"
+	appendvar EXTRA_LDFLAGS "${JS_COMMON_FLAGS} -emit-llvm"
+fi
+
 [ -f platform/${OS}/platform.sh ] && . platform/${OS}/platform.sh
 [ -f rumpkernel/${RUMP_KERNEL}.sh ] && . rumpkernel/${RUMP_KERNEL}.sh
 
@@ -558,7 +571,12 @@ mkdir -p ${RUMPOBJ}/explode/platform
 		if [ "${RUMP_KERNEL}" = "linux" ] ; then
 			appendvar LIBCSO_OBJS "${LIBC_DIR}/*.lo"
 		fi
-		${CC-cc} $LDFLAGS_LIBCSO -o libc.so $LIBCSO_OBJS -lgcc -lgcc_eh
+        if [ "${OS}" != "js" ] ; then
+            GCC_LIBS=-lgcc -lgcc_eh
+        else
+            appendvar LDFLAGS_LIBCSO "${JS_COMMON_FLAGS}"
+        fi
+		${CC-cc} $LDFLAGS_LIBCSO -o libc.so $LIBCSO_OBJS $GCC_LIBS
 	fi
 )
 

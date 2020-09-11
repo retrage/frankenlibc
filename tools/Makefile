@@ -7,7 +7,7 @@ BIN=$(BINDIR)/rexec
 OBJ=$(OBJDIR)/rexec.o
 INC=rexec.h
 DEPS=$(INC) $(OBJDIR) $(BINDIR)
-PLATFORMS=freebsd linux netbsd qemu-arm spike darwin
+PLATFORMS=freebsd linux netbsd qemu-arm spike darwin js
 
 default:		linux
 
@@ -49,6 +49,9 @@ qemu-arm:		qemu-arm.sh $(BINDIR)
 
 spike:			spike.sh $(BINDIR)
 			cp spike.sh $(BIN)
+
+js:				js.sh $(BINDIR)
+			cp js.sh $(BIN)
 
 .PHONY:			clean $(PLATFORMS)
 clean:		

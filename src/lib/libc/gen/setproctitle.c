@@ -58,7 +58,11 @@ __weak_alias(setproctitle,_setproctitle)
  * For compatibility with old versions of crt0 that didn't define __ps_strings,
  * define it as a common here.
  */
+#ifndef __EMSCRIPTEN__
 struct ps_strings *__ps_strings;
+#else
+extern struct ps_strings *__ps_strings;
+#endif
 
 void
 setproctitle(const char *fmt, ...)

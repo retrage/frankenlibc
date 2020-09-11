@@ -36,7 +36,7 @@
 /*
  * Pull in the correct definitions for our toolchain target.
  */
-#ifdef __ELF__
+#if defined(__ELF__) || defined(__EMSCRIPTEN__)
 #include <link_elf.h>
 #else
 #include <link_aout.h>

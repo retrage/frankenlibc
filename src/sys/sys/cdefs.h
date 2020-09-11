@@ -56,7 +56,7 @@
 #endif
 
 #include <machine/cdefs.h>
-#ifdef __ELF__
+#if defined(__ELF__) || defined(__EMSCRIPTEN__)
 #include <sys/cdefs_elf.h>
 #else
 #include <sys/cdefs_aout.h>

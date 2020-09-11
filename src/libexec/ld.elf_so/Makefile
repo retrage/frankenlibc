@@ -32,6 +32,7 @@ M=		${.CURDIR}/arch/${ARCHSUBDIR}
      (${LDELFSO_MACHINE_ARCH} == "coldfire") ||				\
      (${LDELFSO_MACHINE_ARCH} == "hppa") ||				\
      (${LDELFSO_MACHINE_ARCH} == "i386") ||				\
+     (${MACHINE_CPU} == "js") ||					\
      (${LDELFSO_MACHINE_ARCH} == "m68k") ||				\
      (${MACHINE_CPU} == "mips") ||					\
      (${MACHINE_CPU} == "or1k") ||					\

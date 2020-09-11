@@ -41,7 +41,11 @@ __RCSID("$NetBSD: initfini.c,v 1.11 2013/08/19 22:14:37 matt Exp $");
 #include <sys/tls.h>
 #include <stdbool.h>
 
+#ifndef __EMSCRIPTEN__
 void	_libc_init(void) __attribute__((__constructor__, __used__));
+#else
+void	_libc_init(void) __attribute__((__used__));
+#endif
 
 void	__guard_setup(void);
 void	__libc_thr_init(void);

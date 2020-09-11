@@ -14,7 +14,7 @@ MAKECONF?=	/etc/mk.conf
 #
 # CPU model, derived from MACHINE_ARCH
 #
-MACHINE_CPU=	${MACHINE_ARCH:C/mipse[bl]/mips/:C/mips64e[bl]/mips/:C/sh3e[bl]/sh3/:S/coldfire/m68k/:S/m68000/m68k/:C/arm.*/arm/:C/earm.*/arm/:S/earm/arm/:S/powerpc64/powerpc/:S/aarch64eb/aarch64/:S/or1knd/or1k/:C/riscv../riscv/}
+MACHINE_CPU=	${MACHINE_ARCH:C/mipse[bl]/mips/:C/mips64e[bl]/mips/:C/sh3e[bl]/sh3/:S/coldfire/m68k/:S/m68000/m68k/:C/arm.*/arm/:C/earm.*/arm/:S/earm/arm/:S/powerpc64/powerpc/:S/aarch64eb/aarch64/:S/or1knd/or1k/:C/riscv../riscv/:S/js/js/}
 
 #
 # Subdirectory used below ${RELEASEDIR} when building a release
@@ -538,6 +538,7 @@ MACHINES.arm=		acorn26 acorn32 cats epoc32 evbarm hpcarm \
 MACHINES.coldfire=	evbcf
 MACHINES.i386=		i386
 MACHINES.ia64=		ia64
+MACHINES.js=		js
 MACHINES.hppa=		hppa
 MACHINES.m68000=	sun2
 MACHINES.m68k=		amiga atari cesfic hp300 luna68k mac68k \
@@ -721,16 +722,19 @@ MKGCC:= no
 
 # No GDB support for aarch64
 MKGDB.aarch64=	no
+MKGDB.js=	no
 MKGDB.or1k=	no
 MKGDB.riscv32=	no
 MKGDB.riscv64=	no
 
 # No kernel modules for or1k (yet)
+MKKMOD.js=	no
 MKKMOD.or1k=	no
 MKKMOD.riscv32=	no
 MKKMOD.riscv64=	no
 
 # No profiling for or1k (yet)
+MKPROFILE.js=	no
 MKPROFILE.or1k=	no
 MKPROFILE.riscv32=no
 MKPROFILE.riscv64=no

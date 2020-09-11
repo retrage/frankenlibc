@@ -314,6 +314,7 @@ typedef struct {
 #define EM_TILEGX	192	/* Tilera TILE-GX multicore architecture family */
 #define EM_Z80		220	/* Zilog Z80 */
 #define EM_RISCV	243	/* RISC-V */
+#define EM_JS       255 /* JavaScript */
 
 /* Unofficial machine types follow */
 #define EM_ALPHA_EXP	36902	/* used by NetBSD/alpha; obsolete */

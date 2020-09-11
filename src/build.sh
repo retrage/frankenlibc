@@ -676,6 +676,7 @@ MACHINE=ia64		MACHINE_ARCH=ia64
 MACHINE=ibmnws		MACHINE_ARCH=powerpc
 MACHINE=iyonix		MACHINE_ARCH=arm	ALIAS=oiyonix
 MACHINE=iyonix		MACHINE_ARCH=earm	ALIAS=eiyonix DEFAULT
+MACHINE=js          MACHINE_ARCH=js         DEFAULT
 MACHINE=landisk		MACHINE_ARCH=sh3el
 MACHINE=luna68k		MACHINE_ARCH=m68k
 MACHINE=mac68k		MACHINE_ARCH=m68k
@@ -796,7 +797,7 @@ getarch()
 		done
 		;;
 	*)
-		bomb "Unknown target MACHINE: ${MACHINE}"
+		bomb "Unknown target MACHINE: ${MACHINE} #1"
 		;;
 	esac
 }
@@ -843,7 +844,7 @@ validatearch()
 		: OK
 		;;
 	*:false:*)
-		bomb "Unknown target MACHINE: ${MACHINE}"
+		bomb "Unknown target MACHINE: ${MACHINE} #2"
 		;;
 	*:*:false)
 		bomb "Unknown target MACHINE_ARCH: ${MACHINE_ARCH}"

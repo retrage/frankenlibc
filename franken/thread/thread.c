@@ -117,6 +117,10 @@ struct thread {
 #define STACKSIZE 65536
 #endif
 
+#ifndef ASSTACKSIZE
+#define ASSTACKSIZE 16384
+#endif
+
 static void switch_threads(struct thread *, struct thread *);
 static int64_t now(void);
 
@@ -229,8 +233,12 @@ schedule(void)
 	TAILQ_FOREACH_SAFE(thread, &exited_threads, thread_list, tmp) {
 		if (thread != prev) {
 			TAILQ_REMOVE(&exited_threads, thread, thread_list);
-			if ((thread->flags & THREAD_EXTSTACK) == 0)
+			if ((thread->flags & THREAD_EXTSTACK) == 0) {
 				munmap(thread->ctx.uc_stack.ss_sp, STACKSIZE);
+#ifdef __EMSCRIPTEN__
+                munmap(thread->ctx.as_stack.ss_sp, ASSTACKSIZE);
+#endif
+            }
 			free(thread->name);
 			free(thread);
 		}
@@ -241,11 +249,25 @@ static void
 create_ctx(ucontext_t *ctx, void *stack, size_t stack_size,
 	void (*f)(void *), void *data)
 {
+#ifdef __EMSCRIPTEN__
+  void *as_stack;
+  size_t as_stack_size;
+
+  as_stack_size = ASSTACKSIZE;
+  as_stack = mmap(NULL, as_stack_size, PROT_READ | PROT_WRITE,
+                  MAP_SHARED | MAP_ANON | MAP_STACK, -1, 0); 
+  assert(as_stack != MAP_FAILED);
+#endif
 
 	getcontext(ctx);
 	ctx->uc_stack.ss_sp = stack;
 	ctx->uc_stack.ss_size = stack_size;
 	ctx->uc_stack.ss_flags = 0;
+#ifdef __EMSCRIPTEN__
+    ctx->as_stack.ss_sp = as_stack;
+    ctx->as_stack.ss_size = as_stack_size;
+    ctx->as_stack.ss_flags = 0;
+#endif
 	ctx->uc_link = NULL; /* TODO may link to main thread */
 	makecontext(ctx, (void (*)(void))f, 1, data);
 }

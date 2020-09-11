@@ -184,6 +184,8 @@ probeld ()
 		appendvar_fs CCWRAPPER_MANGLE : '-Wl,-x'
 	elif echo $(LANG=C ${LD} -v 2>&1) | grep -q 'Apple TAPI' ; then
 		LD_FLAVOR=darwin
+    elif echo $(LANG=C ${CC} -dumpmachine) | grep -q 'emscripten' ; then
+        LD_FLAVOR=GNU
 	else
 		diagout 'output from linker:'
 		diagout -r ${linkervers}
@@ -205,13 +207,14 @@ probeld ()
 probenm ()
 {
 
-	echo 'void testsym(void); void testsym(void) {return;}' \
-	    | ${CC} ${EXTRA_CFLAGS} -x c -c - -o ${OBJDIR}/probenm.o
+	echo 'void testsym(void); void testsym(void) {return;}' > /tmp/probenm.c
+	${CC} ${EXTRA_CFLAGS} -c /tmp/probenm.c -o ${OBJDIR}/probenm.o
 	lastfield=$(${NM} -go ${OBJDIR}/probenm.o | awk '/testsym/{print $NF}')
 	if [ "${lastfield}" != ${prefix}'testsym' ]; then
 		diagout nm: expected \"testsym\", got \"${lastfield}\"
 		die incompatible output from probing \"${NM}\"
 	fi
+    rm -f /tmp/probenm.c
 	rm -f ${OBJDIR}/probenm.o
 }
 
@@ -264,8 +267,9 @@ doesitbuild ()
 
 	warnflags="-Wmissing-prototypes -Wstrict-prototypes -Wimplicit -Werror"
 	printf "${theprog}" \
-	    | ${CC} ${warnflags} ${EXTRA_CFLAGS}	\
-		-x c - -o /dev/null $* > /dev/null 2>&1
+        > /tmp/tmp.c
+	${CC} ${warnflags} ${EXTRA_CFLAGS}	\
+		 /tmp/tmp.c -c -o /dev/null $* > /dev/null 2>&1
 }
 
 doesitbuild_host ()
@@ -1221,6 +1225,10 @@ evalmachine ()
 			appendvar EXTRA_CWARNFLAGS -Wno-format
 		fi
 		;;
+    "wasm32"|"wasm64")
+            MACHINE="js"
+            MACHINE_GNU_ARCH="js"
+        ;;
 	esac
 	[ -z "${MACHINE}" ] \
 	    && die script does not know machine \"${MACHINE_GNU_ARCH}\"

@@ -52,6 +52,7 @@
 #define	__indr_reference(sym,alias)	/* nada, since we do weak refs */
 
 #if __STDC__
+#ifndef __EMSCRIPTEN__
 #define	__strong_alias(alias,sym)	       				\
     __asm(".global " _C_LABEL_STRING(#alias) "\n"			\
 	    _C_LABEL_STRING(#alias) " = " _C_LABEL_STRING(#sym));
@@ -63,7 +64,12 @@
 /* Do not use __weak_extern, use __weak_reference instead */
 #define	__weak_extern(sym)						\
     __asm(".weak " _C_LABEL_STRING(#sym));
-
+#else /* !__EMSCRIPTEN__ */
+/* aliases is not currently support by wasm-ld */
+#define	__strong_alias(alias,sym)
+#define	__weak_alias(alias,sym)
+#define	__weak_extern(sym)
+#endif /* __EMSCRIPTEN__ */
 #if __GNUC_PREREQ__(4, 0)
 #define	__weak	__attribute__((__weak__))
 #else
@@ -82,10 +88,14 @@
 #define	__weakref_visible	extern
 #endif
 
+#ifndef __EMSCRIPTEN__
 #define	__warn_references(sym,msg)					\
     __asm(".pushsection .gnu.warning." #sym "\n"			\
 	  ".ascii \"" msg "\"\n"					\
 	  ".popsection");
+#else /* !__EMSCRIPTEN__ */
+#define	__warn_references(sym,msg)
+#endif /* __EMSCRIPTEN__ */
 
 #else /* !__STDC__ */
 
@@ -124,7 +134,9 @@
 	      _C_LABEL_STRING(#name) " = " _C_LABEL_STRING(#resolver))
 #endif
 
-#if __STDC__
+#if __EMSCRIPTEN__
+#define __SECTIONSTRING(_sec, _str)
+#elif __STDC__
 #define	__SECTIONSTRING(_sec, _str)					\
 	__asm(".pushsection " #_sec "\n"				\
 	      ".asciz \"" _str "\"\n"					\
@@ -148,12 +160,21 @@
 #define	__KERNEL_COPYRIGHT(_n, _s)	__COPYRIGHT(_s)
 
 #ifndef __lint__
+#ifdef __EMSCRIPTEN__
+#define	__link_set_make_entry(set, sym)					\
+	static void const * const __link_set_##set##_sym_##sym		\
+	    __section(".custom_section.link_set_" #set) __used = (const void *)&sym
+#define	__link_set_make_entry2(set, sym, n)				\
+	static void const * const __link_set_##set##_sym_##sym##_##n	\
+	    __section(".custom_section.link_set_" #set) __used = (const void *)&sym[n]
+#else /* __EMSCRIPTEN__ */
 #define	__link_set_make_entry(set, sym)					\
 	static void const * const __link_set_##set##_sym_##sym		\
 	    __section("link_set_" #set) __used = (const void *)&sym
 #define	__link_set_make_entry2(set, sym, n)				\
 	static void const * const __link_set_##set##_sym_##sym##_##n	\
 	    __section("link_set_" #set) __used = (const void *)&sym[n]
+#endif /* !__EMSCRIPTEN__ */
 #else
 #define	__link_set_make_entry(set, sym)					\
 	extern void const * const __link_set_##set##_sym_##sym

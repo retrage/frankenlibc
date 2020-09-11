@@ -108,8 +108,10 @@ device_t booted_wedge;
 int booted_partition;
 
 /* XXX: unused */
+#ifndef __EMSCRIPTEN__
 kmutex_t tty_lock;
 krwlock_t exec_lock;
+#endif
 
 struct lwplist alllwp = LIST_HEAD_INITIALIZER(alllwp);
 

@@ -19,6 +19,8 @@
 #include <mips/ucontext.h>
 #elif defined(__riscv64)
 #include "riscv64/ucontext.h"
+#elif defined(__EMSCRIPTEN__)
+#include "js/ucontext.h"
 #else
 #error "Unknown architecture"
 #endif

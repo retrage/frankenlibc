@@ -48,6 +48,7 @@
  */
 
 #include <machine/endian.h>
+#include <machine/math.h>
 
 /*
  * <sys/ieee754.h> defines the layout of IEEE 754 floating point types.

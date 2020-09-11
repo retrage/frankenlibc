@@ -11,17 +11,17 @@
 
 SECTIONS
 {
-	link_set_modules :
+	.custom_section.link_set_modules :
 	{
 		__start_link_set_modules = .;
-		*(link_set_modules);
+		*(.custom_section.link_set_modules);
 		__stop_link_set_modules = .;
 	}
 
-	link_set_rump_components :
+	.custom_section.link_set_rump_components :
 	{
 		__start_link_set_rump_components = .;
-		*(link_set_rump_components);
+		*(.custom_section.link_set_rump_components);
 		__stop_link_set_rump_components = .;
 	}
 }

@@ -82,6 +82,9 @@ makebuild ()
 	     -o ${MACHINE#evbppc} != ${MACHINE} ]; then
 		DIRS_emul=sys/rump/kern/lib/libsys_linux
 	fi
+    if [ ${MACHINE} = "js" ]; then
+      DIRS_emul=
+    fi
 	${SYS_SUNOS} && appendvar DIRS_emul sys/rump/kern/lib/libsys_sunos
 	if ${HIJACK}; then
 		DIRS_final="lib/librumphijack"
@@ -155,6 +158,7 @@ makekernelheaders ()
 	appendvar dodirs arch/evbppc/include arch/powerpc/include
 	appendvar dodirs arch/evbmips/include arch/mips/include
 	appendvar dodirs arch/riscv/include
+	appendvar dodirs arch/js/include
 	for dir in ${dodirs}; do
 		(cd ${SRCDIR}/sys/${dir} && ${RUMPMAKE} obj)
 		(cd ${SRCDIR}/sys/${dir} && ${RUMPMAKE} includes)

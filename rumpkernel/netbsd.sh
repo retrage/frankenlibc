@@ -61,6 +61,9 @@ rumpkernel_explode_libc()
 	cd ${RUMPOBJ}/explode/libc
 	${AR-ar} x ${RUMP}/lib/libc.a
 	LIBC_DIR=libc
+    for OBJ in *.o; do
+        opt -load /home/akira/src/llvm/build/lib/LLVMRedefineSyms.so -emns_redefine_syms $OBJ -o $OBJ
+    done
 }
 
 rumpkernel_build_extra()

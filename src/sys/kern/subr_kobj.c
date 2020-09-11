@@ -209,6 +209,8 @@ kobj_load(kobj_t ko)
 	ELF32_MACHDEP_ID_CASES
 #elif ELFSIZE == 64
 	ELF64_MACHDEP_ID_CASES
+#elif __EMSCRIPTEN__
+	ELF32_MACHDEP_ID_CASES
 #else
 #error not defined
 #endif

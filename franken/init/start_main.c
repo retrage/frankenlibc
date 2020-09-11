@@ -19,7 +19,11 @@ char **_environ __attribute__((weak));
 char **__environ __attribute__((weak));
 
 static char empty_string[] = "";
+#ifndef __EMSCRIPTEN__
 char *__progname = empty_string;
+#else
+extern char *__progname;
+#endif
 
 void _libc_init(void) __attribute__((weak));
 void _libc_init() {}

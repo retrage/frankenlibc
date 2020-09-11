@@ -47,7 +47,11 @@ __RCSID("$NetBSD: getprogname.c,v 1.4 2011/10/06 20:31:41 christos Exp $");
 __weak_alias(getprogname,_getprogname)
 #endif
 
+#ifndef __EMSCRIPTEN__
 const char *__progname;
+#else
+extern const char *__progname;
+#endif
 
 const char *
 getprogname(void)
